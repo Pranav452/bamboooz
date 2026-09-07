@@ -54,9 +54,9 @@ export default function AddForm({ today }: { today: string }) {
         ))}
       </div>
 
-      <div className="flex gap-2">
-        <input name="remarks" placeholder="Remarks (optional)" className="flex-1 rounded-xl bg-zinc-800 px-3 py-3 outline-none" />
-        <input name="spent_at" type="date" defaultValue={today} className="w-36 shrink-0 rounded-xl bg-zinc-800 px-3 py-3 outline-none text-zinc-300" />
+      <div className="grid grid-cols-[1fr_auto] gap-2">
+        <input name="remarks" placeholder="Remarks (optional)" className="min-w-0 rounded-xl bg-zinc-800 px-3 py-3 outline-none" />
+        <input name="spent_at" type="date" defaultValue={today} className="min-w-0 w-[9.5rem] appearance-none rounded-xl bg-zinc-800 px-3 py-3 outline-none text-zinc-300" />
       </div>
 
       <button
