@@ -78,7 +78,10 @@ def categorise(r):
     # A large payment to a named individual behaves like a transfer, not a purchase.
     if abs(r["amount"]) >= 2000:
         return "Transfer"
-    return "Others"                 # small person-to-person: unknowable from the statement
+    # Pranav's daily habit: repeated 20/21 rupee payments to street vendors.
+    if r["amount"] in (-20, -21):
+        return "Cigarettes"
+    return "Others"                 # other small person-to-person: not knowable from the statement
 
 def main():
     ap = argparse.ArgumentParser()
