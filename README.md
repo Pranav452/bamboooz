@@ -24,7 +24,7 @@ Shortcut for one-tap entry.
 ## Setup
 
     npm install
-    cp .env.local.example .env.local     # fill in the values below
+    # .env already holds your credentials
     psql "$DATABASE_URL" -f db/schema.sql
     npm run dev
 
@@ -33,14 +33,24 @@ Shortcut for one-tap entry.
 | Variable | Where it comes from |
 |---|---|
 | `DATABASE_URL` | Neon Console, connection string |
-| `NEON_AUTH_BASE_URL` | Neon Console, your project, Auth. Leave blank to run in demo mode |
+| `NEON_AUTH_BASE_URL` | Already set. From `npx neon neon-auth enable --project-id blue-math-00791061` |
 | `NEON_AUTH_COOKIE_SECRET` | Any random string, 32+ characters |
 | `API_KEY` | Any long random string. The Shortcut sends it as `x-api-key` |
 | `SHORTCUT_USER_ID` | The Neon Auth user id the Shortcut writes to |
 
-**Demo mode.** With `NEON_AUTH_BASE_URL` blank the app skips sign-in and uses a single
-local user, so you can click through everything before provisioning auth. Setting the
-variable turns on real accounts and route protection with no other code changes.
+**Auth is enabled.** Neon Auth (Managed Better Auth) is provisioned on project
+`blue-math-00791061`. Its tables live in the `neon_auth` schema and every page is
+protected by middleware. Signing up creates an `app_users` row plus the starter
+categories and card automatically.
+
+Google sign-in needs a Google OAuth client configured in the Neon Console under
+Auth before the button will work. Email and password works out of the box.
+
+After you sign up for the first time, point the Shortcut at your real account:
+
+    ./scripts/link-shortcut-user.sh you@email.com
+
+That fills in `SHORTCUT_USER_ID` and offers to move the demo data over.
 
 ## Deploy
 

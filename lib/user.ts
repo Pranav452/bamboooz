@@ -29,7 +29,10 @@ export async function ensureProfile(u: SessionUser) {
   const rows = await sql`
     INSERT INTO app_users (id, email, full_name, avatar_url)
     VALUES (${u.id}, ${u.email}, ${u.name}, ${u.image})
-    ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email
+    ON CONFLICT (id) DO UPDATE SET
+      email      = COALESCE(EXCLUDED.email,      app_users.email),
+      full_name  = COALESCE(app_users.full_name, EXCLUDED.full_name),
+      avatar_url = COALESCE(EXCLUDED.avatar_url, app_users.avatar_url)
     RETURNING (xmax = 0) AS inserted`;
   if (rows[0]?.inserted) await seedUser(u.id);
 }
