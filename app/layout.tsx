@@ -3,14 +3,14 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Spend",
-  description: "Daily expense tracker",
+  description: "Expense tracker",
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Spend" },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "Spend" },
   icons: { apple: "/icons/icon-192.png" },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0b0b0f",
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -20,7 +20,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
-      <body className="min-h-full bg-[#0b0b0f] text-zinc-100 antialiased">{children}</body>
+      <body className="min-h-full antialiased">
+        <div className="mx-auto min-h-screen w-full max-w-md">{children}</div>
+      </body>
     </html>
   );
 }

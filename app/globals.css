@@ -1,4 +1,20 @@
 @import "tailwindcss";
-html { -webkit-tap-highlight-color: transparent; }
-body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
-input, select { font-size: 16px; } /* stops iOS zoom on focus */
+
+:root { --ink:#111114; --muted:#8A8A8F; --line:#EDEDF0; --card:#F7F7F9; }
+
+html { -webkit-tap-highlight-color: transparent; background:#fff; }
+body { color: var(--ink); background:#fff; }
+input, select, textarea { font-size: 16px; }  /* stop iOS zoom on focus */
+
+.safe-top { padding-top: max(env(safe-area-inset-top), 12px); }
+.safe-bot { padding-bottom: calc(env(safe-area-inset-bottom) + 92px); }
+
+.card { background:#fff; border:1px solid var(--line); border-radius:22px; }
+.soft { background:var(--card); border-radius:20px; }
+.no-scrollbar::-webkit-scrollbar { display:none; }
+.no-scrollbar { scrollbar-width:none; }
+
+@keyframes draw { from { stroke-dashoffset: 1200 } to { stroke-dashoffset: 0 } }
+.trend { stroke-dasharray: 1200; animation: draw 1.1s ease forwards; }
+@keyframes rise { from { opacity:0; transform: translateY(8px) } to { opacity:1; transform:none } }
+.rise { animation: rise .35s ease both; }
