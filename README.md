@@ -91,3 +91,4 @@ Shortcut can show what actually went wrong.
 To clear the demo data:
 
     psql "$DATABASE_URL" -c "DELETE FROM app_users WHERE id = 'demo-user';"
+# bamboooz
