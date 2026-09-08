@@ -72,10 +72,12 @@ CREATE TABLE IF NOT EXISTS transactions (
   tag         text,
   occurred_at timestamptz NOT NULL DEFAULT now(),
   source      text NOT NULL DEFAULT 'app' CHECK (source IN ('app','shortcut','import')),
+  external_ref text,   -- bank reference, makes statement imports idempotent
   created_at  timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS tx_user_time  ON transactions (user_id, occurred_at DESC);
 CREATE INDEX IF NOT EXISTS tx_user_cat   ON transactions (user_id, category_id);
+CREATE UNIQUE INDEX IF NOT EXISTS tx_user_extref ON transactions (user_id, external_ref) WHERE external_ref IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS receipts (
   id             bigserial PRIMARY KEY,

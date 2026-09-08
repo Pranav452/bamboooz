@@ -49,7 +49,8 @@ export async function monthTotals(userId: string, month: string) {
     SELECT COALESCE(SUM(amount) FILTER (WHERE amount > 0), 0)::float8 AS income,
            COALESCE(-SUM(amount) FILTER (WHERE amount < 0), 0)::float8 AS expenses
     FROM transactions
-    WHERE user_id = ${userId} AND occurred_at >= ${start} AND occurred_at < ${end}`;
+    WHERE user_id = ${userId} AND kind <> 'transfer'
+      AND occurred_at >= ${start} AND occurred_at < ${end}`;
   const income = r[0].income as number, expenses = r[0].expenses as number;
   return { income, expenses, saved: income - expenses };
 }
@@ -67,7 +68,7 @@ export async function spendByCategory(userId: string, month: string) {
   return (await sql`
     SELECT c.name, c.emoji, c.bg, (-SUM(t.amount))::float8 AS total
     FROM transactions t JOIN categories c ON c.id = t.category_id
-    WHERE t.user_id = ${userId} AND t.amount < 0
+    WHERE t.user_id = ${userId} AND t.amount < 0 AND t.kind <> 'transfer'
       AND t.occurred_at >= ${start} AND t.occurred_at < ${end}
     GROUP BY c.name, c.emoji, c.bg ORDER BY total DESC`) as {
     name: string; emoji: string; bg: string; total: number;
@@ -123,7 +124,7 @@ export async function budgetsVsActual(userId: string, month: string) {
   return (await sql`
     SELECT c.name, c.emoji, b.amount::float8 AS budget,
            COALESCE((SELECT -SUM(t.amount) FROM transactions t
-                     WHERE t.category_id = c.id AND t.amount < 0
+                     WHERE t.category_id = c.id AND t.amount < 0 AND t.kind <> 'transfer'
                        AND t.occurred_at >= ${start} AND t.occurred_at < ${end}), 0)::float8 AS spent
     FROM budgets b JOIN categories c ON c.id = b.category_id
     WHERE b.user_id = ${userId} AND b.period = 'month'
@@ -137,7 +138,7 @@ export async function dailyTrend(userId: string, month: string) {
     SELECT to_char(d.day, 'YYYY-MM-DD') AS day,
            COALESCE(-SUM(t.amount), 0)::float8 AS total
     FROM generate_series(${start}::date, (${end}::date - 1), '1 day') AS d(day)
-    LEFT JOIN transactions t ON t.user_id = ${userId} AND t.amount < 0
+    LEFT JOIN transactions t ON t.user_id = ${userId} AND t.amount < 0 AND t.kind <> 'transfer'
          AND (t.occurred_at AT TIME ZONE 'Asia/Kolkata')::date = d.day
     GROUP BY d.day ORDER BY d.day`) as { day: string; total: number }[];
 }
@@ -150,7 +151,7 @@ export async function monthlySeries(userId: string, months = 6) {
     FROM generate_series(
            date_trunc('month', now() AT TIME ZONE 'Asia/Kolkata') - make_interval(months => ${months - 1}),
            date_trunc('month', now() AT TIME ZONE 'Asia/Kolkata'), '1 month') AS m(month)
-    LEFT JOIN transactions t ON t.user_id = ${userId} AND t.amount < 0
+    LEFT JOIN transactions t ON t.user_id = ${userId} AND t.amount < 0 AND t.kind <> 'transfer'
          AND date_trunc('month', t.occurred_at AT TIME ZONE 'Asia/Kolkata') = m.month
     GROUP BY m.month ORDER BY m.month`) as { month: string; total: number }[];
 }
